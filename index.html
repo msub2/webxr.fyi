@@ -55,7 +55,7 @@
     // }
     // getChromiumIssues();
 
-    function createSpecRow(spec) {
+    function createSpecRow(repoName, spec) {
       const row = document.createElement('tr');
 
       const {shortname, events} = spec.spec[0];
@@ -71,7 +71,7 @@
         .replace('ar', 'AR')
         .replace('dom', 'DOM')
         .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-      name.innerText = processedName;
+      name.innerHTML = `<a href="https://github.com/${repoName}">${processedName}</a>`;
 
       const target = document.createElement('td');
       if (latest?.target) {
@@ -98,7 +98,7 @@
       const res = await fetch('https://www.w3.org/immersive-web/list_spec.json');
       const json = await res.json();
       for (const spec in json) {
-        const row = createSpecRow(json[spec]);
+        const row = createSpecRow(spec, json[spec]);
         document.getElementById('specInfo').append(row);
       }
     }
