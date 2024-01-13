@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+  <title>webxr.fyi</title>
+  <script type="module">
+    function createBugRow(bug, owner) {
+      const domain = owner == 'mozilla' ? 'bugzilla.mozilla.org' : 'bugs.webkit.org';
+      const row = document.createElement('tr');
+      const id = document.createElement('td');
+      const url = `https://${domain}/show_bug.cgi?id=${bug.id}`;
+      id.innerHTML = `<a href="${url}">${bug.id}</a>`;
+      const summary = document.createElement('td');
+      summary.innerText = bug.summary;
+      const updated = document.createElement('td');
+      updated.innerText = bug.last_change_time;
+      row.append(id);
+      row.append(summary);
+      row.append(updated);
+      return row;
+    }
+
+    async function getGeckoBugs() {
+      const mozillaBugzillaUrl = '/geckobugs';
+      const res = await fetch(mozillaBugzillaUrl);
+      const json = await res.json();
+      json.bugs.forEach(bug => {
+        const row = createBugRow(bug, 'mozilla');
+        document.getElementById('geckoBugs').append(row);
+      });
+    }
+
+    async function getWebKitBugs() {
+      const webkitBugzillaUrl = '/webkitbugs';
+      const res = await fetch(webkitBugzillaUrl);
+      const json = await res.json();
+      json.bugs.forEach(bug => {
+        const row = createBugRow(bug, 'webkit');
+        document.getElementById('webkitBugs').append(row);
+      });
+    }
+
+    getGeckoBugs();
+    getWebKitBugs();
+
+    // // doesn't work lol
+    // async function getChromiumIssues() {
+    //   const url = "https://bugs.chromium.org/p/chromium/issues/list?q=component%3ABlink%3EWebXR%2Ccomponent%3AInternals%3EXR&can=2";
+    //   const page = await fetch(url);
+    //   const text = await page.text();
+    //   console.log(text);
+    //   document.getElementById('chromiumIssues').contentWindow.document.write(text);
+    // }
+    // getChromiumIssues();
+
+    function createSpecRow(spec) {
+      const row = document.createElement('tr');
+
+      const {shortname, events} = spec.spec[0];
+      let latest;
+      if ("pop" in events) latest = events.pop();
+
+      const name = document.createElement('td');
+      let processedName = shortname
+        .replace('webxrlayers', 'webxr layers')
+        .replace('webxr', 'WebXR')
+        .replaceAll('-', ' ')
+        .replace(' 1', '')
+        .replace('ar', 'AR')
+        .replace('dom', 'DOM')
+        .split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+      name.innerText = processedName;
+
+      const target = document.createElement('td');
+      if (latest?.target) {
+        target.innerText = latest.target.toUpperCase();
+      } else {
+        target.innerText = 'CG Report';
+      }
+
+      const lastUpdated = document.createElement('td');
+      if (latest?.date) {
+        lastUpdated.innerText = latest.date;
+      } else {
+        lastUpdated.innerText = 'N/A';
+      }
+
+      row.append(name);
+      row.append(target);
+      row.append(lastUpdated);
+
+      return row;
+    }
+
+    async function getSpecInfo() {
+      const res = await fetch('https://www.w3.org/immersive-web/list_spec.json');
+      const json = await res.json();
+      for (const spec in json) {
+        const row = createSpecRow(json[spec]);
+        document.getElementById('specInfo').append(row);
+      }
+    }
+    getSpecInfo();
+  </script>
+  <style>
+    body {
+      grid-template-columns: 1fr max(45rem, 90%) 1fr;
+      text-align: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: 1024px;
+    }
+
+    table {
+      margin: auto;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>webxr.fyi</h1>
+    <i>Extended details about the state of WebXR and its various implementations.</i>
+  </header>
+  <main>
+    <div>
+      <h2>OS Support Table</h2>
+      <p>There is an existing table detailing support of individual WebXR components at <a href="https://immersiveweb.dev/#supporttable">https://immersiveweb.dev/#supporttable</a>.</p>
+      <p>The following table shows the current state of support between the WebXR implementation of different browser engines and all major operating systems.</p>
+      <table>
+        <thead>
+          <tr>
+            <td></td>
+            <th>Chromium</th>
+            <th>Gecko</th>
+            <th>WebKit</th>
+            <th>Servo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>Windows</th>
+            <td>Yes</td>
+            <td>Yes<sup>1</sup></td>
+            <td>No</td>
+            <td>Yes<sup>2</sup></td>
+          </tr>
+          <tr>
+            <th>macOS</th>
+            <td colspan="4">macOS currently lacks any VR/XR runtimes for implementation.</td>
+          </tr>
+          <tr>
+            <th>Linux</th>
+            <td>No<sup>3</sup></td>
+            <td>No<sup>3</sup></td>
+            <td>No</td>
+            <td>No<sup>4</sup></td>
+          </tr>
+          <tr>
+            <th>BSD</th>
+            <td colspan="4">BSD currently lacks any VR/XR runtimes for implementation.</td>
+          </tr>
+          <tr>
+            <th>Android</th>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td>No</td>
+            <td>Yes</td>
+          </tr>
+          <tr>
+            <th>iOS</th>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+            <td>No</td>
+          </tr>
+          <tr>
+            <th>visionOS</th>
+            <td>No</td>
+            <td>No</td>
+            <td>Yes</td>
+            <td>No</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="5">
+              <p>
+                <sup>1</sup> Requires both the <code>dom.vr.enabled</code> and <code>dom.vr.webxr.enabled</code> prefs to be enabled and either OpenVR or Oculus runtimes for rendering.
+                 Implementation is fairly functional but technically incomplete and not actively worked on.
+              </p>
+              <p>
+                <sup>2</sup> Support is in codebase but not shipped in any ports by default.
+              </p>
+              <p>
+                <sup>3</sup> See <a href="https://github.com/mrxz/webxr-linux">this GitHub repo</a> for unofficial patches enabling WebXR on Linux.
+              </p>
+              <p>
+                <sup>4</sup> This is being actively worked on.
+              </p>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div>
+      <h2>WebXR WPT Results</h2>
+      <iframe src="https://wpt.fyi/results/webxr?label=experimental&label=master&aligned"></iframe>
+    </div>
+    <div>
+      <h2>Active WebXR Bugs/Issues</h2>
+      <h3>Blink/Chromium</h3>
+      <p>Still figuring out how to best embed these, in the meantime you can view directly <a href="https://bugs.chromium.org/p/chromium/issues/list?q=component%3ABlink%3EWebXR%2Ccomponent%3AInternals%3EXR&can=2">here</a>.</p>
+      <h3>Gecko</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Summary</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="geckoBugs"></tbody>
+      </table>
+      <h3>WebKit</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Summary</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="webkitBugs"></tbody>
+      </table>
+    </div>
+    <div>
+      <h2>Specification Status</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Target</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="specInfo"></tbody>
+      </table>
+    </div>
+  </main>
+  <footer>
+    <small>Created by <a href="https://www.msub2.com">m₂</a></small>
+  </footer>
+</body>
+</html>
