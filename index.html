@@ -216,9 +216,9 @@
       </ul>
       <h4>WebKit/Windows</h4>
       <ul>
-        <li>Runtime: Windows has multiple available OpenXR runtimes, but WebKit currently uses the XR_MNDX_egl_enable OpenXR extension. This extension is currently only supported in Monado, which does not have a fully functional Windows version yet.</li>
+        <li>Runtime: Windows has multiple available OpenXR runtimes, but WebKit currently uses the XR_MNDX_egl_enable OpenXR extension. This extension is currently only supported in Monado, which does not have a fully functional Windows version yet, and SteamVR on Linux.</li>
         <li>Implementation: WebKit contains a fairly complete implementation of the WebXR Device API and some associated modules thanks to work from Apple and Igalia.</li>
-        <li>Graphics API Support: WebKit uses EGL to drive their OpenXR implementation, which is available to Windows. See earlier runtime note however.</li>
+        <li>Graphics API Support: WebKit uses EGL to drive their OpenXR implementation. See earlier runtime note.</li>
         <li>Accessible Browser: There are little to no browsers for Windows making using of the WebKit Windows port.</li>
       </ul>
       <h4>Chromium/Linux</h4>
@@ -226,14 +226,14 @@
         <li>Runtime: Chromium uses OpenXR, for which Linux has both the SteamVR and Monado OpenXR runtimes available.</li>
         <li>Implementation: Chromium is one of the most developed WebXR implementations.</li>
         <li>Graphics API Support: Chromium currently only supports D3D11 for WebXR on desktop, limiting it to Windows. There's been some unofficial work adding Linux support.</li>
-        <li>Accessible Browser: There are multiple Chromium-based browsers shipping WebXR.</li>
+        <li>Accessible Browser: Chrome is the main browser built on Chromium, but there are multiple Chromium-based browsers shipping WebXR.</li>
       </ul>
       <h4>Gecko/Linux</h4>
       <ul>
         <li>Runtime: Gecko can use either OpenVR or LibOVR, limiting Linux to SteamVR.</li>
         <li>Implementation: Gecko has a mostly complete implementation of WebXR, but it is gated behind prefs that are disabled by default.</li>
         <li>Graphics API Support: Gecko currently only supports D3D11 for WebXR on desktop, limiting it to Windows. There's been some unofficial work adding Linux support.</li>
-        <li>Accessible Browser: Firefox is the main browser built on Gecko, along with other variants such as Waterfox, LibreWolf, and GNU IceCat.</li>
+        <li>Accessible Browser: Firefox is the main browser built on Gecko, along with its variants such as Waterfox, LibreWolf, and GNU IceCat.</li>
       </ul>
     </div>
     <div>
